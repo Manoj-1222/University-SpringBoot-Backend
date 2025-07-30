@@ -53,6 +53,7 @@ public class SecurityConfig {
                 .requestMatchers("/applications/submit").permitAll()
                 .requestMatchers("/university/basic-info").permitAll()
                 .requestMatchers("/health").permitAll()
+                .requestMatchers("/api").permitAll()  // Allow access to API root
                 .requestMatchers("/actuator/health").permitAll()
                 
                 // Student endpoints - aligned with controller permissions
