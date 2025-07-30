@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -14,10 +15,12 @@ import org.springframework.stereotype.Component;
 import com.university.management.model.Student;
 
 /**
- * Data Initializer for students-SB collection
+ * Data Initializer for students-SB collection - DEVELOPMENT ONLY
  * Populates the students-SB collection with 5 sample students (2 female, 3 male)
+ * Only runs in development profile to avoid production data issues
  */
 @Component
+@Profile({"dev", "development", "local"}) // Only run in development
 public class StudentSBDataInitializer implements CommandLineRunner {
     
     @Autowired

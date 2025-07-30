@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -16,10 +17,12 @@ import org.springframework.stereotype.Component;
 import com.university.management.model.Admin;
 
 /**
- * Additional Admin Data Initializer
+ * Additional Admin Data Initializer - DEVELOPMENT ONLY
  * Populates the admin collection with additional admin users
+ * Only runs in development profile to avoid production data issues
  */
 @Component
+@Profile({"dev", "development", "local"}) // Only run in development
 @Order(2) // Run after the main DataInitializer
 public class AdminDataInitializer implements CommandLineRunner {
     
