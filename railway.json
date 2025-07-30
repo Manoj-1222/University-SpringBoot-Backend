@@ -6,6 +6,8 @@
     "deploy": {
         "startCommand": "java -jar target/university-management-0.0.1-SNAPSHOT.jar",
         "restartPolicyType": "ON_FAILURE",
-        "restartPolicyMaxRetries": 10
+        "restartPolicyMaxRetries": 10,
+        "healthcheckPath": "/api/health",
+        "healthcheckTimeout": 300
     }
 }
