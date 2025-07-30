@@ -84,12 +84,6 @@ PORT=8080
 ```
 4. Deploy automatically
 
-### Render Alternative
-1. Create account at [render.com](https://render.com)
-2. Create new Web Service
-3. Build Command: `mvn clean package -DskipTests=true`
-4. Start Command: `java -jar target/university-management-0.0.1-SNAPSHOT.jar`
-
 ## 🧪 Testing
 
 ### Test Admin Login
