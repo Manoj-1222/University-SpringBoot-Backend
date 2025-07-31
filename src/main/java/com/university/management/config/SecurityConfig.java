@@ -47,14 +47,25 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 // Public endpoints - authentication not required
-                .requestMatchers("/auth/**").permitAll()
-                .requestMatchers("/admin/auth/**").permitAll()
+                .requestMatchers("/auth/login", "/auth/register", "/auth/student-login").permitAll()
+                .requestMatchers("/admin/auth/login", "/admin/auth/register").permitAll()
                 .requestMatchers("/public/**").permitAll()
                 .requestMatchers("/applications/submit").permitAll()
                 .requestMatchers("/university/basic-info").permitAll()
                 .requestMatchers("/health").permitAll()
                 .requestMatchers("/").permitAll()  // Allow access to API root
                 .requestMatchers("/actuator/health").permitAll()
+                
+                // Course endpoints - public read access for browsing courses
+                .requestMatchers(HttpMethod.GET, "/courses/available").permitAll()
+                .requestMatchers(HttpMethod.GET, "/courses/active").permitAll()
+                .requestMatchers(HttpMethod.GET, "/courses/department/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/courses/program/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/courses/{id}").permitAll()
+                
+                // Protected auth endpoints - require authentication
+                .requestMatchers("/auth/me", "/auth/change-password", "/auth/logout").authenticated()
+                .requestMatchers("/admin/auth/me").hasAnyRole("STAFF_ADMIN", "SUPER_ADMIN")
                 
                 // Student endpoints - aligned with controller permissions
                 .requestMatchers(HttpMethod.GET, "/students/me").hasRole("STUDENT")
@@ -77,11 +88,11 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT, "/admissions/**").hasAnyRole("STAFF_ADMIN", "SUPER_ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/admissions/**").hasRole("SUPER_ADMIN")
                 
-                // Admin endpoints - aligned with simplified role system
-                .requestMatchers(HttpMethod.GET, "/admin/**").hasAnyRole("STAFF_ADMIN", "SUPER_ADMIN")
-                .requestMatchers(HttpMethod.POST, "/admin/**").hasAnyRole("STAFF_ADMIN", "SUPER_ADMIN")
-                .requestMatchers(HttpMethod.PUT, "/admin/**").hasAnyRole("STAFF_ADMIN", "SUPER_ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/admin/**").hasRole("SUPER_ADMIN")
+                // Admin endpoints - Must come AFTER /admin/auth/** to avoid conflicts  
+                .requestMatchers(HttpMethod.GET, "/admin/students/**", "/admin/courses/**").hasAnyRole("STAFF_ADMIN", "SUPER_ADMIN")
+                .requestMatchers(HttpMethod.POST, "/admin/students/**", "/admin/courses/**").hasAnyRole("STAFF_ADMIN", "SUPER_ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/admin/students/**", "/admin/courses/**").hasAnyRole("STAFF_ADMIN", "SUPER_ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/admin/students/**", "/admin/courses/**").hasRole("SUPER_ADMIN")
                 
                 // University endpoints - public read, admin write
                 .requestMatchers(HttpMethod.GET, "/university/**").permitAll()

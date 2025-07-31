@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -34,8 +37,12 @@ public class StudentSBDataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         // Check if students-SB collection already has data
-        if (mongoTemplate.getCollection(COLLECTION_NAME).countDocuments() > 0) {
-            System.out.println("ℹ️  students-SB collection already has data, skipping initialization");
+        long existingCount = mongoTemplate.getCollection(COLLECTION_NAME).countDocuments();
+        if (existingCount > 0) {
+            System.out.println("ℹ️  students-SB collection already has data, checking for rollNo updates...");
+            
+            // Check if existing students need rollNo updates
+            updateExistingStudentsWithRollNo();
             return;
         }
         
@@ -188,6 +195,62 @@ public class StudentSBDataInitializer implements CommandLineRunner {
             return "Female";
         } else {
             return "Male";
+        }
+    }
+
+    private void updateExistingStudentsWithRollNo() {
+        try {
+            // Find students without rollNo using Spring Data MongoDB
+            Query query = new Query();
+            query.addCriteria(Criteria.where("rollNo").exists(false)
+                .orOperator(
+                    Criteria.where("rollNo").is(null),
+                    Criteria.where("rollNo").is("")
+                ));
+            
+            List<Student> studentsWithoutRollNo = mongoTemplate.find(query, Student.class, COLLECTION_NAME);
+            
+            if (!studentsWithoutRollNo.isEmpty()) {
+                System.out.println("🔄 Updating " + studentsWithoutRollNo.size() + " students with rollNo...");
+                
+                int counter = 1;
+                // Get the highest existing roll number to continue sequence
+                Query maxRollQuery = new Query();
+                maxRollQuery.addCriteria(Criteria.where("rollNo").regex("^SB2025\\d+$"));
+                List<Student> existingStudents = mongoTemplate.find(maxRollQuery, Student.class, COLLECTION_NAME);
+                
+                if (!existingStudents.isEmpty()) {
+                    int maxRollNumber = existingStudents.stream()
+                        .mapToInt(s -> {
+                            String rollNo = s.getRollNo();
+                            if (rollNo != null && rollNo.startsWith("SB2025")) {
+                                try {
+                                    return Integer.parseInt(rollNo.substring(6));
+                                } catch (NumberFormatException e) {
+                                    return 0;
+                                }
+                            }
+                            return 0;
+                        })
+                        .max()
+                        .orElse(0);
+                    counter = maxRollNumber + 1;
+                }
+                
+                for (Student student : studentsWithoutRollNo) {
+                    String rollNo = String.format("SB2025%03d", counter++);
+                    
+                    Query updateQuery = new Query(Criteria.where("id").is(student.getId()));
+                    Update update = new Update().set("rollNo", rollNo);
+                    mongoTemplate.updateFirst(updateQuery, update, COLLECTION_NAME);
+                }
+                
+                System.out.println("✅ Updated " + studentsWithoutRollNo.size() + " students with rollNo");
+            } else {
+                System.out.println("✅ All students already have rollNo assigned");
+            }
+        } catch (Exception e) {
+            System.err.println("❌ Error updating students with rollNo: " + e.getMessage());
         }
     }
     
