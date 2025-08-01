@@ -77,7 +77,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT, "/students/**").hasRole("SUPER_ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/students/**").hasRole("SUPER_ADMIN")
                 
-                // Application/Admission endpoints - simplified role system
+                // Application/Admission endpoints - public submit, protected admin access
+                .requestMatchers(HttpMethod.POST, "/applications/submit").permitAll()
                 .requestMatchers(HttpMethod.GET, "/applications/**").hasAnyRole("STAFF_ADMIN", "SUPER_ADMIN")
                 .requestMatchers(HttpMethod.POST, "/applications/**").hasAnyRole("STAFF_ADMIN", "SUPER_ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/applications/**").hasAnyRole("STAFF_ADMIN", "SUPER_ADMIN")
@@ -130,7 +131,13 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("*"));
+        configuration.setAllowedOrigins(Arrays.asList(
+            "http://localhost:5173",
+            "http://localhost:5174", 
+            "http://localhost:5175",
+            "http://localhost:3000",
+            "https://university-frontend-new.vercel.app"
+        ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
