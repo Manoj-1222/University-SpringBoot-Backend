@@ -334,43 +334,6 @@ GET /health
 
 ## 📊 Database Schema
 
-### Student Collection
-```javascript
-{
-  "_id": "ObjectId",
-  "name": "String",
-  "rollNo": "String (unique)",
-  "email": "String (unique)",
-  "password": "String (encrypted)",
-  "department": "String",
-  "year": "Integer",
-  "semester": "Integer",
-  "phone": "String",
-  "dateOfBirth": "Date",
-  "bloodGroup": "String",
-  "currentCGPA": "Double",
-  "totalCredits": "Integer",
-  "attendance": {
-    "percentage": "Double"
-  },
-  "totalFee": "Double",
-  "paidAmount": "Double",
-  "placementStatus": "String",
-  "company": "String",
-  "packageAmount": "Double",
-  "createdAt": "DateTime",
-  "updatedAt": "DateTime"
-}
-```
-
-## 🧪 Testing
-
-### Manual Testing
-1. Start the application
-2. Use Postman or curl to test endpoints
-3. Check the health endpoint: `GET /health`
-4. Test authentication flow: register → login → access protected endpoints
-
 ### Sample Test Data
 ```json
 {
@@ -384,61 +347,7 @@ GET /health
 }
 ```
 
-## 🚀 Deployment
 
-### Local Development
-```bash
-mvn spring-boot:run
-```
 
-### Production Build
-```bash
-mvn clean package
-java -jar target/university-management-0.0.1-SNAPSHOT.jar
-```
 
-### Environment Variables
-Set the following environment variables for production:
-- `MONGODB_URI`: MongoDB connection string
-- `JWT_SECRET`: JWT secret key
-- `JWT_EXPIRATION`: Token expiration time
-- `CORS_ALLOWED_ORIGINS`: Allowed CORS origins
 
-## 📈 Performance Features
-
-- **Database Indexing**: Indexed fields for fast queries (email, rollNo)
-- **Pagination**: Efficient data retrieval with Spring Data pagination
-- **Connection Pooling**: MongoDB connection pooling for scalability
-- **Lazy Loading**: Optimized data loading strategies
-
-## 🔄 Integration
-
-This Spring Boot backend can be integrated with:
-- **React Frontend**: CORS configured for React development servers
-- **Node.js Backend**: Can run alongside existing Node.js backend
-- **Mobile Apps**: RESTful APIs suitable for mobile app integration
-- **Third-party Services**: Extensible architecture for external integrations
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 👥 Team
-
-Developed as part of the University Management System project by the development team.
-
-## 📞 Support
-
-For support and queries, please contact the development team or create an issue in the repository.
-
----
-
-**Note**: This Spring Boot backend serves as an alternative/complementary implementation to the existing Node.js backend, providing enterprise-grade features and Spring ecosystem benefits.
